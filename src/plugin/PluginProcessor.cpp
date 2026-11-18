@@ -53,9 +53,16 @@ static juce::AudioParameterFloat* fl(int id, const juce::String& name, juce::Nor
             .withLabel({}).withStringFromValueFunction(text ? text : [](float v, int){ return juce::String(v, 2); }));
     return p.release();
 }
+// Snap getValue() to 0 or 1. JUCE AudioParameterBool otherwise returns the raw host
+// value, and APVTS only stores the denormalised bool, so pluginval's state-restore
+// test can save 0.28, restore a no-op, and still read 0.28.
+struct SilkBoolParam : juce::AudioParameterBool {
+    using juce::AudioParameterBool::AudioParameterBool;
+    float getValue() const override { return get() ? 1.0f : 0.0f; }
+};
 static juce::AudioParameterBool* bl(int id, const juce::String& name, bool def) {
     ensureIds();
-    return new juce::AudioParameterBool(juce::ParameterID{ idPtr[(size_t)id], 1 }, name, def);
+    return new SilkBoolParam(juce::ParameterID{ idPtr[(size_t)id], 1 }, name, def);
 }
 static juce::AudioParameterChoice* ch(int id, const juce::String& name, const juce::StringArray& items, int def) {
     ensureIds();

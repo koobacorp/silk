@@ -150,6 +150,31 @@ int main(int, char**) {
       CHECK(r.p.getProgramName(3).isNotEmpty());
     }
 
+    { std::puts("- bool parameters snap and restore through setStateInformation");
+      Rig a(48000);
+      for (int id : { (int)P_AUTO_TRIM, (int)P_DELTA, P_BAND(4, 0), P_BAND(5, 0) }) {
+          auto* prm = a.p.param(id);
+          float original = prm->getValue();
+          prm->setValueNotifyingHost(0.28f);
+          CHECKM(prm->getValue() == 0.0f, "%s after 0.28", silkParamId(id));
+          prm->setValueNotifyingHost(0.61f);
+          CHECKM(prm->getValue() == 1.0f, "%s after 0.61", silkParamId(id));
+          prm->setValueNotifyingHost(original);
+      }
+      a.set(P_AUTO_TRIM, 0); a.set(P_DELTA, 0);
+      a.set(P_BAND(4, 0), 1); a.set(P_BAND(5, 0), 1);
+      juce::MemoryBlock mb; a.p.getStateInformation(mb);
+      a.p.param(P_AUTO_TRIM)->setValueNotifyingHost(0.28f);
+      a.p.param(P_DELTA)->setValueNotifyingHost(0.25f);
+      a.p.param(P_BAND(4, 0))->setValueNotifyingHost(0.61f);
+      a.p.param(P_BAND(5, 0))->setValueNotifyingHost(0.56f);
+      a.p.setStateInformation(mb.getData(), (int)mb.getSize());
+      CHECK(std::abs(a.p.param(P_AUTO_TRIM)->getValue() - 0.0f) < 0.1f);
+      CHECK(std::abs(a.p.param(P_DELTA)->getValue() - 0.0f) < 0.1f);
+      CHECK(std::abs(a.p.param(P_BAND(4, 0))->getValue() - 1.0f) < 0.1f);
+      CHECK(std::abs(a.p.param(P_BAND(5, 0))->getValue() - 1.0f) < 0.1f);
+    }
+
     { std::puts("- state save/reload and every control automation smoke");
       Rig a(48000); a.set(P_DEPTH, 7.5f); a.set(P_SHARPNESS, 6.0f);
       juce::MemoryBlock mb; a.p.getStateInformation(mb);
