@@ -1,0 +1,18 @@
+SILK v1.0 — macOS install
+
+1. Unzip this folder somewhere you can find it.
+2. Close FL Studio.
+3. Copy SILK.vst3 into:
+   /Library/Audio/Plug-Ins/VST3
+   (or, for your user only, ~/Library/Audio/Plug-Ins/VST3)
+4. Optionally copy SILK.component into:
+   /Library/Audio/Plug-Ins/Components
+   FL Studio on Mac uses the VST3. The AU is for other hosts.
+5. If a previous SILK is already there, replace it (the installer can keep a backup).
+6. Rescan plugins in FL Studio: Options > Manage plugins > Find plugins.
+   Add SILK on a mixer track (it is an effect, not a generator). It is meant
+   first as a vocal insert, and it also works on other sources.
+
+Nothing is installed automatically. You can also run install_mac.sh, which copies
+the VST3 and the AU into those folders after asking, and needs your Mac password
+(sudo) for the system folders.

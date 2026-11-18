@@ -1,0 +1,16 @@
+/build/
+/JUCE
+/JUCE/
+/CMakeFiles/
+cmake-build-*/
+*.user
+.DS_Store
+.idea/
+.vscode/
+*.o
+*.so
+*.vst3
+shots/*
+!shots/*.png
+/dist/
+/refs/
